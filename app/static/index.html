@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SteamTracker — Price History &amp; Sale Forecasts</title>
+<meta name="description" content="SteamTracker: real Steam price history, sale predictions, and regional price comparisons for every game on Steam.">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="top" id="top">
+  <a class="brand" href="#/">
+    <svg class="logo-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <circle cx="14" cy="14" r="12" fill="url(#navgrad)"/>
+      <path d="M9 18l3.5-7 2.5 4.5 1.8-2.8L19 18" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <defs><linearGradient id="navgrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse"><stop stop-color="#4cc2ff"/><stop offset="1" stop-color="#7c4dff"/></linearGradient></defs>
+    </svg>
+    SteamTracker
+  </a>
+
+  <div class="search" role="search">
+    <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M13 13l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <input id="q" type="search" placeholder="Search any Steam game…" autocomplete="off" aria-label="Search games" spellcheck="false">
+    <ul id="suggest" class="suggest" hidden role="listbox"></ul>
+  </div>
+
+  <nav class="topnav">
+    <select id="region" aria-label="Region"></select>
+    <a href="#/about" class="nav-link">About</a>
+    <a href="#/privacy" class="nav-link">Privacy</a>
+  </nav>
+</header>
+
+<!-- Cookie consent banner -->
+<div id="cookie-banner" class="cookie-banner" hidden>
+  <div class="cookie-inner">
+    <p>🍪 We use cookies to remember your region preference and improve your experience.
+      <a href="#/privacy" class="cookie-link">Learn more</a></p>
+    <div class="cookie-actions">
+      <button id="cookie-accept" class="btn-cookie btn-accept">Accept</button>
+      <button id="cookie-decline" class="btn-cookie btn-decline">Decline</button>
+    </div>
+  </div>
+</div>
+
+<main id="app" aria-live="polite"></main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-left">
+      <span class="footer-brand">SteamTracker</span>
+      <span class="footer-sep">·</span>
+      <a href="#/about">About</a>
+      <span class="footer-sep">·</span>
+      <a href="#/privacy">Privacy &amp; Cookies</a>
+    </div>
+    <p id="meta" class="footer-meta"></p>
+    <p class="footer-disc">Not affiliated with Valve or Steam. Prices are sourced from Steam's public storefront API and snapshotted over time. Forecasts are probabilistic estimates, not guarantees.</p>
+  </div>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

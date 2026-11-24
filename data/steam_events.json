@@ -1,0 +1,15 @@
+{
+  "_note": "Editable calendar. 'confirmed': true means dates were published by Valve. Update when Valve announces new dates. Sources checked 2026-11-22: PC Gamer, GamesRadar, Notebookcheck, Digital Citizen. Black Friday window is an estimate (Valve had not published exact dates).",
+  "events": [
+    {"name": "Steam Spring Sale 2026", "type": "spring", "start": "2026-03-19", "end": "2026-03-26", "confirmed": true},
+    {"name": "Steam Summer Sale 2026", "type": "summer", "start": "2026-06-25", "end": "2026-07-09", "confirmed": true},
+    {"name": "Steam Autumn Sale 2026", "type": "autumn", "start": "2026-10-01", "end": "2026-10-08", "confirmed": true},
+    {"name": "Auto-Battler RPG Fest", "type": "fest", "start": "2026-11-16", "end": "2026-11-23", "confirmed": true},
+    {"name": "Black Friday deals (Specials hub)", "type": "black_friday", "start": "2026-11-23", "end": "2026-12-01", "confirmed": false},
+    {"name": "Steam Winter Sale 2026", "type": "winter", "start": "2026-12-17", "end": "2027-01-04", "confirmed": true},
+    {"name": "Desktop Companion Fest", "type": "fest", "start": "2027-01-14", "end": "2027-01-18", "confirmed": true},
+    {"name": "Shop Keeper Fest", "type": "fest", "start": "2027-01-25", "end": "2027-02-01", "confirmed": true},
+    {"name": "Steam Spring Sale 2027", "type": "spring", "start": "2027-03-18", "end": "2027-03-25", "confirmed": true},
+    {"name": "Steam Summer Sale 2027", "type": "summer", "start": "2027-06-24", "end": "2027-07-08", "confirmed": true}
+  ]
+}
