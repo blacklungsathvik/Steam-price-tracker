@@ -140,6 +140,25 @@ def create_app(cfg: Config | None = None, steam: SteamClient | None = None) -> F
     @app.get("/api/deals")
     def deals():
         cc = region()
+        c = conn()
+        if live_allowed():
+            count = c.execute("SELECT COUNT(*) cnt FROM price_state WHERE cc=? AND currency!=''", (cc,)).fetchone()["cnt"]
+            if count < 20:
+                top_ids = [r["app_id"] for r in c.execute(
+                    "SELECT app_id FROM games ORDER BY COALESCE(current_players, 0) DESC, app_id DESC LIMIT 50"
+                ).fetchall()]
+                if top_ids:
+                    try:
+                        prices_map = steam_client.prices(top_ids, cc)
+                        for aid, obs in prices_map.items():
+                            if obs:
+                                service.record_price(c, aid, cc, obs)
+                            else:
+                                service.mark_checked_no_price(c, aid, cc)
+                        c.commit()
+                    except Exception as e:
+                        log.warning("live populate for %s failed: %s", cc, e)
+
         try:
             min_disc = max(0, min(100, int(request.args.get("min_discount", 0))))
             limit = max(1, min(100, int(request.args.get("limit", 24))))
@@ -248,16 +267,28 @@ def create_app(cfg: Config | None = None, steam: SteamClient | None = None) -> F
     @app.get("/api/games/<int:app_id>")
     def game(app_id: int):
         c = conn()
+        cc = region()
         if not service.game_row(c, app_id) or not c.execute(
                 "SELECT 1 FROM games WHERE app_id=? AND details_updated_at IS NOT NULL", (app_id,)).fetchone():
             if not live_allowed():
                 return jsonify(error="Game not tracked yet. Try again shortly."), 429
             try:
-                if not service.ensure_game(c, steam_client, cfg, app_id, region()):
+                if not service.ensure_game(c, steam_client, cfg, app_id, cc):
                     return jsonify(error="Game not found on Steam"), 404
             except SteamError:
                 return jsonify(error="Steam is not responding right now"), 502
-        payload = service.game_payload(c, cfg, app_id, region())
+        else:
+            st = c.execute("SELECT 1 FROM price_state WHERE app_id=? AND cc=? AND currency!=''", (app_id, cc)).fetchone()
+            if not st and live_allowed():
+                try:
+                    p = steam_client.prices([app_id], cc).get(app_id)
+                    if p:
+                        service.record_price(c, app_id, cc, p)
+                        c.commit()
+                except Exception:
+                    pass
+
+        payload = service.game_payload(c, cfg, app_id, cc)
         if not payload:
             return jsonify(error="Game not found"), 404
         return cacheable(jsonify(payload), 30)
