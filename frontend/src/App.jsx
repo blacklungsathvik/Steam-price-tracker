@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { api, money, num, date } from "./api.js";
+import { api, money, num, date, CC_NAMES } from "./api.js";
 import Home from "./Home.jsx";
 import Game from "./Game.jsx";
 import About from "./About.jsx";
@@ -122,7 +122,11 @@ export default function App() {
         <nav className="topnav">
           {meta && (
             <select value={cc} onChange={e => changeRegion(e.target.value)} aria-label="Region">
-              {meta.regions.map(r => <option key={r} value={r}>{r.toUpperCase()}</option>)}
+              {meta.regions.map(r => (
+                <option key={r} value={r}>
+                  {CC_NAMES[r] ? `${r.toUpperCase()} · ${CC_NAMES[r]}` : r.toUpperCase()}
+                </option>
+              ))}
             </select>
           )}
           <a href="#/about">About</a>

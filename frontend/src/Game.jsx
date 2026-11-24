@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { api, money, date, iso, num, pct, daysFrom } from "./api.js";
+import { api, money, date, iso, num, pct, daysFrom, CC_NAMES } from "./api.js";
 import Chart from "./Chart.jsx";
 
 const KIND = {
@@ -11,13 +11,6 @@ const KIND = {
   base_hike:     ["Price increased", "up"],
   base_cut:      ["Price cut", "down"],
   price_change:  ["Price changed", ""],
-};
-
-const CC_NAMES = {
-  us:"United States",gb:"United Kingdom",eu:"European Union",in:"India",
-  au:"Australia",ca:"Canada",br:"Brazil",ru:"Russia",de:"Germany",fr:"France",
-  jp:"Japan",kr:"South Korea",sg:"Singapore",tr:"Turkey",ar:"Argentina",
-  mx:"Mexico",pl:"Poland",se:"Sweden",no:"Norway",ch:"Switzerland",
 };
 
 function Stat({ label, value, sub }) {

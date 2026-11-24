@@ -185,22 +185,62 @@ def create_app(cfg: Config | None = None, steam: SteamClient | None = None) -> F
         if len(q) < 2:
             return jsonify(results=[])
         cc = region()
+        results = []
+        c = conn()
+
+        if q.isdigit():
+            aid = int(q)
+            row_aid = c.execute(
+                """SELECT g.app_id, g.name, g.header_image, s.currency, s.initial, s.final, s.discount
+                   FROM games g LEFT JOIN price_state s ON s.app_id=g.app_id AND s.cc=?
+                   WHERE g.app_id=?""", (cc, aid)).fetchone()
+            if row_aid:
+                results.append({
+                    "app_id": row_aid["app_id"], "name": row_aid["name"], "image": row_aid["header_image"],
+                    "currency": row_aid["currency"], "divisor": cfg.divisor(row_aid["currency"]) if row_aid["currency"] else 100,
+                    "final": row_aid["final"], "discount": row_aid["discount"], "tracked": True
+                })
+            elif live_allowed():
+                try:
+                    d = steam_client.details(aid, cc)
+                    if d:
+                        service.ensure_game(c, steam_client, cfg, aid, cc)
+                        results.append({
+                            "app_id": aid, "name": d["name"], "image": d.get("header_image"),
+                            "currency": (d.get("price") or {}).get("currency"),
+                            "divisor": cfg.divisor((d.get("price") or {}).get("currency") or "USD"),
+                            "final": (d.get("price") or {}).get("final"),
+                            "discount": (d.get("price") or {}).get("discount", 0),
+                            "tracked": True
+                        })
+                except Exception:
+                    pass
+
         like = "%" + q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
-        rows = conn().execute(
+        rows = c.execute(
             """SELECT g.app_id, g.name, g.header_image, s.currency, s.initial, s.final, s.discount, s.changed_at
                FROM games g LEFT JOIN price_state s ON s.app_id=g.app_id AND s.cc=?
                WHERE g.name LIKE ? ESCAPE '\\' ORDER BY (g.name LIKE ? ESCAPE '\\') DESC, g.name LIMIT 12""",
             (cc, like, q.replace("%", "") + "%")).fetchall()
-        results = [{**{k: r[k] for k in ("app_id", "name")}, "image": r["header_image"], "currency": r["currency"],
-                    "divisor": cfg.divisor(r["currency"]) if r["currency"] else 100,
-                    "final": r["final"], "discount": r["discount"], "tracked": True} for r in rows]
-        if len(results) < 5 and live_allowed():
-            seen = {r["app_id"] for r in results}
+        seen = {r["app_id"] for r in results}
+        for r in rows:
+            if r["app_id"] not in seen:
+                seen.add(r["app_id"])
+                results.append({
+                    "app_id": r["app_id"], "name": r["name"], "image": r["header_image"],
+                    "currency": r["currency"], "divisor": cfg.divisor(r["currency"]) if r["currency"] else 100,
+                    "final": r["final"], "discount": r["discount"], "tracked": True
+                })
+
+        if len(results) < 8 and live_allowed():
             try:
-                for it in steam_client.search(q, cc)[:8]:
+                for it in steam_client.search(q, cc)[:10]:
                     if it["app_id"] not in seen:
-                        results.append({"app_id": it["app_id"], "name": it["name"], "image": it["image"],
-                                        "tracked": False})
+                        seen.add(it["app_id"])
+                        results.append({
+                            "app_id": it["app_id"], "name": it["name"], "image": it["image"],
+                            "tracked": False
+                        })
             except SteamError:
                 pass
         return jsonify(results=results)
@@ -213,7 +253,7 @@ def create_app(cfg: Config | None = None, steam: SteamClient | None = None) -> F
             if not live_allowed():
                 return jsonify(error="Game not tracked yet. Try again shortly."), 429
             try:
-                if not service.ensure_game(c, steam_client, cfg, app_id):
+                if not service.ensure_game(c, steam_client, cfg, app_id, region()):
                     return jsonify(error="Game not found on Steam"), 404
             except SteamError:
                 return jsonify(error="Steam is not responding right now"), 502

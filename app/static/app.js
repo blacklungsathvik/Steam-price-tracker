@@ -104,12 +104,16 @@ function regionTable(appId, M) {
     }
     // Country-code to full country name
     const CC_NAMES = {
-      us:"United States",gb:"United Kingdom",eu:"European Union",in:"India",au:"Australia",
-      ca:"Canada",br:"Brazil",ru:"Russia",de:"Germany",fr:"France",jp:"Japan",kr:"South Korea",
-      sg:"Singapore",tr:"Turkey",ar:"Argentina",mx:"Mexico",nz:"New Zealand",pl:"Poland",
-      se:"Sweden",no:"Norway",dk:"Denmark",ch:"Switzerland",hk:"Hong Kong",id:"Indonesia",
-      th:"Thailand",ph:"Philippines",vn:"Vietnam",cn:"China",sa:"Saudi Arabia",ae:"UAE",
-      ng:"Nigeria",za:"South Africa",cl:"Chile",co:"Colombia",pe:"Peru",ua:"Ukraine"
+      us:"United States (USD)", gb:"United Kingdom (GBP)", eu:"Eurozone (EUR)", in:"India (INR)",
+      de:"Germany (EUR)", fr:"France (EUR)", jp:"Japan (JPY)", kr:"South Korea (KRW)", cn:"China (CNY)",
+      ca:"Canada (CAD)", au:"Australia (AUD)", br:"Brazil (BRL)", ru:"Russia (RUB)", tr:"Turkey (USD-MENA)",
+      ar:"Argentina (USD-LATAM)", mx:"Mexico (MXN)", pl:"Poland (PLN)", ch:"Switzerland (CHF)",
+      no:"Norway (NOK)", se:"Sweden (EUR)", za:"South Africa (ZAR)", hk:"Hong Kong (HKD)", tw:"Taiwan (TWD)",
+      sg:"Singapore (SGD)", cl:"Chile (CLP)", co:"Colombia (COP)", pe:"Peru (PEN)", uy:"Uruguay (UYU)",
+      cr:"Costa Rica (CRC)", ua:"Ukraine (UAH)", id:"Indonesia (IDR)", my:"Malaysia (MYR)",
+      ph:"Philippines (PHP)", th:"Thailand (THB)", vn:"Vietnam (VND)", kz:"Kazakhstan (KZT)",
+      qa:"Qatar (QAR)", sa:"Saudi Arabia (SAR)", ae:"United Arab Emirates (AED)", il:"Israel (ILS)",
+      kw:"Kuwait (KWD)", nz:"New Zealand (NZD)"
     };
     const tbody = el("tbody");
     cc_prices.forEach(r => {

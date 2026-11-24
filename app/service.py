@@ -87,21 +87,18 @@ def backfill_history(conn: sqlite3.Connection, app_id: int, cc: str, key: str) -
     return added
 
 
-def ensure_game(conn: sqlite3.Connection, steam, cfg, app_id: int) -> bool:
-    """Make sure a game is in the DB with details and a price in every tracked region."""
+def ensure_game(conn: sqlite3.Connection, steam, cfg, app_id: int, cc: str | None = None) -> bool:
+    """Make sure a game is in the DB with details and price in the requested region."""
     row = conn.execute("SELECT details_updated_at FROM games WHERE app_id=?", (app_id,)).fetchone()
     if row and row["details_updated_at"]:
         return True
-    d = steam.details(app_id, cfg.default_cc)
+    target_cc = cc or cfg.default_cc
+    d = steam.details(app_id, target_cc)
     if not d or d["type"] not in ("game", "dlc", "demo", "software", "music", "advertising", "mod", "video"):
         return False
     upsert_details(conn, d)
     if d["price"]:
-        record_price(conn, app_id, cfg.default_cc, d["price"])
-    for cc in cfg.regions[1:]:
-        p = steam.prices([app_id], cc).get(app_id)
-        if p:
-            record_price(conn, app_id, cc, p)
+        record_price(conn, app_id, target_cc, d["price"])
     conn.commit()
     return True
 

@@ -227,3 +227,26 @@ class SteamClient:
         payload = self._get(f"{API}/ISteamUserStats/GetNumberOfCurrentPlayers/v1/", {"appid": app_id})
         resp = (payload or {}).get("response") or {}
         return resp.get("player_count") if resp.get("result") == 1 else None
+
+    def app_list(self, api_key: str, max_results: int = 50000, last_appid: int = 0) -> tuple[list[dict], int, bool]:
+        """Fetch Steam games catalog via official IStoreService/GetAppList/v1/."""
+        if not api_key:
+            return [], last_appid, False
+        params = {
+            "key": api_key,
+            "max_results": min(max_results, 50000),
+            "last_appid": last_appid,
+            "include_games": 1,
+            "include_dlc": 0,
+            "include_software": 0,
+        }
+        try:
+            payload = self._get(f"{API}/IStoreService/GetAppList/v1/", params)
+        except SteamError as e:
+            log.warning("GetAppList failed: %s", e)
+            return [], last_appid, False
+        resp = (payload or {}).get("response") or {}
+        apps = resp.get("apps") or []
+        have_more = bool(resp.get("have_more_results", False))
+        last = int(resp.get("last_appid") or (apps[-1]["appid"] if apps else last_appid))
+        return apps, last, have_more

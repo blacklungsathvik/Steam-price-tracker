@@ -18,8 +18,22 @@ SOCIAL_MAX_AGE = 2 * 86400
 
 
 def discover(conn, steam: SteamClient, cfg: Config) -> int:
-    """Add games from Steam's featured lists (specials, top sellers, new releases) in every region."""
+    """Add games from Steam's master catalog and featured lists (specials, top sellers, new releases) in every region."""
     new = 0
+    if cfg.steam_api_key:
+        try:
+            apps, _, _ = steam.app_list(cfg.steam_api_key, max_results=50000, last_appid=0)
+            for app in apps:
+                aid = app.get("appid")
+                aname = app.get("name")
+                if aid and aname:
+                    if not conn.execute("SELECT 1 FROM games WHERE app_id=?", (aid,)).fetchone():
+                        new += 1
+                    service.upsert_stub(conn, aid, aname)
+            conn.commit()
+        except Exception as e:
+            log.warning("catalog sync error: %s", e)
+
     for cc in cfg.regions:
         try:
             feats = steam.featured(cc)

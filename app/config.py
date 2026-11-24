@@ -11,12 +11,22 @@ def _bool(v: str | None, default: bool = False) -> bool:
     return v.strip().lower() in {"1", "true", "yes", "on"}
 
 
+ALL_STEAM_REGIONS = (
+    "us", "gb", "eu", "in", "de", "fr", "jp", "kr", "cn", "ca",
+    "au", "br", "ru", "tr", "ar", "mx", "pl", "ch", "no", "se",
+    "za", "hk", "tw", "sg", "cl", "co", "pe", "uy", "cr", "ua",
+    "id", "my", "ph", "th", "vn", "kz", "qa", "sa", "ae", "il",
+    "kw", "nz"
+)
+
+
 @dataclass(frozen=True)
 class Config:
     db_path: str = "data/tracker.db"
-    regions: tuple = ("us",)
+    regions: tuple = ALL_STEAM_REGIONS
     request_delay: float = 1.6
     user_agent: str = "SteamPriceTracker/1.0 (+self-hosted; polite client)"
+    steam_api_key: str = ""
     itad_key: str = ""
     trust_proxy: int = 0
     live_fetch: bool = True
@@ -42,11 +52,18 @@ def load_config(**overrides) -> Config:
         divisors = json.loads(env.get("CURRENCY_DIVISORS") or "{}")
     except json.JSONDecodeError:
         divisors = {}
-    regions = tuple(r.strip().lower() for r in env.get("TRACK_REGIONS", "us").split(",") if r.strip())
+    regions_env = env.get("TRACK_REGIONS", "").strip().lower()
+    if not regions_env or regions_env in ("all", "*"):
+        regions = ALL_STEAM_REGIONS
+    else:
+        parsed = tuple(r.strip().lower() for r in regions_env.split(",") if r.strip())
+        regions = parsed or ALL_STEAM_REGIONS
+
     cfg = Config(
         db_path=env.get("DB_PATH", "data/tracker.db"),
-        regions=regions or ("us",),
+        regions=regions,
         request_delay=float(env.get("STEAM_REQUEST_DELAY", "1.6")),
+        steam_api_key=env.get("STEAM_API_KEY", ""),
         itad_key=env.get("ITAD_API_KEY", ""),
         trust_proxy=int(env.get("TRUST_PROXY", "0")),
         live_fetch=_bool(env.get("LIVE_FETCH"), True),
