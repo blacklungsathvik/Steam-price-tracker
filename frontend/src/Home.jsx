@@ -142,7 +142,6 @@ export default function Home({ cc, meta }) {
   return (
     <div className="page-home">
       <div className="home-hero">
-        <div className="hero-badge">Engineering Portfolio · Live Distributed Data Engine</div>
         <h1 className="hero-title">SteamTracker</h1>
         <p className="hero-tagline">
           Real-time global Steam price intelligence, multi-region currency analytics, and empirical sale probability forecasting.
