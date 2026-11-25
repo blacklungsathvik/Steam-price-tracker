@@ -1,3 +1,5 @@
+<img width="1917" height="962" alt="Screenshot 2026-11-24 221219" src="https://github.com/user-attachments/assets/d500b253-4f62-46ff-a566-4bd5f8b82f71" />
+<img width="1915" height="961" alt="Screenshot 2026-11-24 221209" src="https://github.com/user-attachments/assets/48df96a5-563b-4225-8131-96a07194b137" />
 # SteamTracker 🎮
 
 > **Self-hosted Steam price intelligence, multi-region currency analytics, and empirical sale probability forecasting.**
@@ -23,7 +25,7 @@ SteamTracker tracks Steam game prices across multiple regions, detects historica
 - **Backend:** Python 3.12, Flask, SQLite3, Requests, Gunicorn
 - **Frontend:** React 19, Vite, SVG Charts
 - **Infrastructure:** Docker, Docker Compose, Windows Batch & Bash launchers
-
+<img width="1915" height="961" alt="Screenshot 2026-11-24 221209" src="https://github.com/user-attachments/assets/48df96a5-563b-4225-8131-96a07194b137" />
 ---
 
 ## Quick Start
